@@ -11,11 +11,10 @@ import java.util.regex.Pattern;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private int id;
+    private String id = UUID.randomUUID().toString();
 
-    @Column(name = "userName")
+    @Column(name = "username")
     private String username;
 
     @Column(name = "email")
@@ -37,12 +36,8 @@ public class User {
         this.email = email;
         this.password = password;
     }
-    public int getId() {
+    public String getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getUsername() {
