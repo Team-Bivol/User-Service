@@ -36,9 +36,12 @@ public class UserController {
             String id = userService.Login(userRequest);
             if (id != null) {
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("Set-Cookie", id);
-                session.setAttribute("token", id);
-                return ResponseEntity.status(HttpStatus.OK).headers(headers).body("Welcome " + id);
+                headers.add("Set-Cookie", id );
+                session.setAttribute("header",headers.get("Set-Cookie").get(0));
+                session.setAttribute("userEmail", userService.getUserById(id).getEmail());
+                session.setAttribute("userInterests", userService.getUserById(id));
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers).body(id);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid credentials");
             }
@@ -48,15 +51,19 @@ public class UserController {
     }
 
     @GetMapping("/interest")
-    public List<Interest> getUserInterests(@RequestBody String id){
-        return userService.getUserById(id).getInterests();
+    public List<Interest> getUserInterests(){
+        return userService.getUserById(session.getAttribute("header").toString()).getInterests();
     }
 
+    @GetMapping("/email")
+    public String getEmail(){
+        return session.getAttribute("userEmail").toString();
+
+    }
     @PostMapping("/interest")
-    public User addUserInterest(@RequestBody UserInterestRequest userInterestRequest){
+    public User addUserInterest(@RequestBody UserInterestRequest userInterestRequest) {
         User user = userService.getUserById(userInterestRequest.getUserId());
         Interest interest = interestService.getInterestById(userInterestRequest.getInterestId());
-        System.out.println(interest);
 
         List<Interest> interests = user.getInterests();
         interests.add(interest);
@@ -66,4 +73,5 @@ public class UserController {
 
         return user;
     }
+
 }
